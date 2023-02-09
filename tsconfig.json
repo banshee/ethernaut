@@ -1,0 +1,28 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2015",
+    "baseUrl": "./src/",
+    "paths": {
+      "*": ["*", "../*"]
+    },
+    "declarationMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true
+    //    "noUnusedLocals": true,
+    //    "lib": [
+    //      "ES2018",
+    //      "ES2018.AsyncGenerator",
+    //      "ES2021"
+    //    ]
+  },
+  "allowJs": true,
+}

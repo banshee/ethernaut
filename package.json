@@ -1,0 +1,10 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "tsconfig-paths": "^4.1.1"
+  }
+}
